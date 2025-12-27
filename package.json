@@ -2,10 +2,16 @@
   "license": "ISC",
   "scripts": {
     "lint:fix": "prettier */*.js \"*/**/*{.js,.ts}\" -w",
-    "lint": "prettier */*.js \"*/**/*{.js,.ts}\" --check"
+    "lint": "prettier */*.js \"*/**/*{.js,.ts}\" --check",
+    "test:localnet": "EPHEMERAL_PROVIDER_ENDPOINT=http://localhost:7799 EPHEMERAL_WS_ENDPOINT=ws://localhost:7800 anchor test --provider.cluster localnet --skip-local-validator --skip-build --skip-deploy",
+    "test:devnet": "anchor test --skip-local-validator",
+    "build:deploy:localnet": "anchor build && anchor deploy --provider.cluster localnet",
+    "build:deploy:devnet": "anchor build && anchor deploy --provider.cluster devnet"
   },
   "dependencies": {
-    "@coral-xyz/anchor": "^0.32.1"
+    "@coral-xyz/anchor": "^0.32.1",
+    "@magicblock-labs/ephemeral-rollups-sdk": "^0.6.5",
+    "@solana/web3.js": "^1.95.8"
   },
   "devDependencies": {
     "chai": "^4.3.4",
