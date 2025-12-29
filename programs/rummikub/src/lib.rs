@@ -58,4 +58,14 @@ pub mod rummikub {
     pub fn undelegate(ctx: Context<CommitGame>) -> Result<()> {
         instructions::delegation::undelegate(ctx)
     }
+
+    /// Request VRF randomness to shuffle tiles
+    pub fn request_shuffle(ctx: Context<RequestShuffle>, client_seed: u8) -> Result<()> {
+        instructions::vrf_shuffle::request_shuffle(ctx, client_seed)
+    }
+
+    /// Callback to consume VRF randomness and shuffle tiles
+    pub fn callback_shuffle(ctx: Context<CallbackShuffle>, randomness: [u8; 32]) -> Result<()> {
+        instructions::vrf_shuffle::callback_shuffle(ctx, randomness)
+    }
 }

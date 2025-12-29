@@ -40,4 +40,6 @@ pub enum RummikubError {
     NotTheWinner,
     #[msg("Prize already claimed")]
     PrizeAlreadyClaimed,
+    #[msg("Invalid game state")]
+    InvalidGameState,
 }

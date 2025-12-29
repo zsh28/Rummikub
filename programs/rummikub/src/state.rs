@@ -76,11 +76,40 @@ impl GameState {
         Ok(())
     }
 
+    pub fn shuffle_tiles_with_randomness(&mut self, randomness: [u8; 32]) -> Result<()> {
+        let len = self.tile_pool.len();
+        
+        // Use VRF randomness to shuffle tiles
+        // We'll use chunks of 4 bytes from the randomness for each swap
+        for i in (1..len).rev() {
+            // Calculate which bytes to use for this iteration
+            let byte_index = (i % 8) * 4;
+            let random_bytes = [
+                randomness[byte_index],
+                randomness[byte_index + 1],
+                randomness[byte_index + 2],
+                randomness[byte_index + 3],
+            ];
+            let random_value = u32::from_le_bytes(random_bytes);
+            let j = (random_value as usize) % (i + 1);
+            self.tile_pool.swap(i, j);
+        }
+        
+        msg!("Tiles shuffled using VRF randomness");
+        Ok(())
+    }
+
     pub fn draw_initial_tiles(&mut self, player_index: usize) -> Result<()> {
         require!(
             self.tiles_remaining >= TILES_PER_PLAYER as u16,
             crate::errors::RummikubError::NotEnoughTiles
         );
+        
+        // Add extra randomness by shuffling remaining tiles before drawing
+        // This ensures each player gets truly random tiles even if they join at different times
+        let clock = Clock::get()?;
+        let seed = clock.unix_timestamp as u64 + (player_index as u64 * 1000);
+        self.shuffle_remaining_tiles(seed)?;
         
         for i in 0..TILES_PER_PLAYER {
             let tile = self.tile_pool.pop().ok_or(crate::errors::RummikubError::NotEnoughTiles)?;
@@ -88,6 +117,22 @@ impl GameState {
             self.tiles_remaining -= 1;
         }
         self.players[player_index].tile_count = TILES_PER_PLAYER as u8;
+        Ok(())
+    }
+    
+    fn shuffle_remaining_tiles(&mut self, seed: u64) -> Result<()> {
+        let mut rng = seed;
+        let len = self.tile_pool.len();
+        
+        // Only shuffle if there are tiles remaining
+        if len > 1 {
+            for i in (1..len).rev() {
+                // Simple LCG random number generator
+                rng = rng.wrapping_mul(1664525).wrapping_add(1013904223);
+                let j = (rng as usize) % (i + 1);
+                self.tile_pool.swap(i, j);
+            }
+        }
         Ok(())
     }
 
@@ -100,6 +145,11 @@ impl GameState {
             self.players[player_index].tile_count < 14,
             crate::errors::RummikubError::TooManyTiles
         );
+        
+        // Add randomness before drawing from pool
+        let clock = Clock::get()?;
+        let seed = clock.unix_timestamp as u64 + (player_index as u64 * 1000) + (self.current_turn as u64 * 100);
+        self.shuffle_remaining_tiles(seed)?;
         
         let tile = self.tile_pool.pop().ok_or(crate::errors::RummikubError::NotEnoughTiles)?;
         let count = self.players[player_index].tile_count as usize;
