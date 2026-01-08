@@ -26,7 +26,7 @@ pub fn join_game(ctx: Context<JoinGame>) -> Result<()> {
 
     // Transfer 0.1 SOL entry fee to game account
     let entry_fee = ENTRY_FEE_LAMPORTS;
-    
+
     system_program::transfer(
         CpiContext::new(
             ctx.accounts.system_program.to_account_info(),
@@ -40,14 +40,14 @@ pub fn join_game(ctx: Context<JoinGame>) -> Result<()> {
 
     // Now get mutable reference after the transfer
     let game = &mut ctx.accounts.game;
-    
+
     // Add entry fee to prize pool
     game.prize_pool += entry_fee;
 
     let player_index = game.current_players as usize;
     game.players[player_index] = Player {
         pubkey: ctx.accounts.player.key(),
-        tiles: [Tile::default(); 14],
+        tiles: [Tile::default(); 21],
         tile_count: 0,
         has_opened: false,
         score: 0,
@@ -61,9 +61,17 @@ pub fn join_game(ctx: Context<JoinGame>) -> Result<()> {
     // Start game if all players joined
     if game.current_players == game.max_players {
         game.game_status = GameStatus::InProgress;
-        msg!("Game started with {} players. Prize pool: {} lamports", game.current_players, game.prize_pool);
+        msg!(
+            "Game started with {} players. Prize pool: {} lamports",
+            game.current_players,
+            game.prize_pool
+        );
     }
 
-    msg!("Player {} joined game. Entry fee: {} SOL", ctx.accounts.player.key(), entry_fee as f64 / 1_000_000_000.0);
+    msg!(
+        "Player {} joined game. Entry fee: {} SOL",
+        ctx.accounts.player.key(),
+        entry_fee as f64 / 1_000_000_000.0
+    );
     Ok(())
 }

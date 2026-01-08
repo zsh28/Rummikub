@@ -36,10 +36,10 @@ pub fn initialize_game(ctx: Context<InitializeGame>, game_id: u64, max_players: 
     game.winner = None;
     game.prize_pool = 0;
     game.bump = ctx.bumps.game;
-    
+
     // Initialize tile pool with all tiles
     game.initialize_tile_pool()?;
-    
+
     msg!("Game {} initialized for {} players", game_id, max_players);
     Ok(())
 }

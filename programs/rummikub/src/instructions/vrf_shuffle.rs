@@ -3,8 +3,8 @@ use ephemeral_vrf_sdk::anchor::vrf;
 use ephemeral_vrf_sdk::instructions::{create_request_randomness_ix, RequestRandomnessParams};
 use ephemeral_vrf_sdk::types::SerializableAccountMeta;
 
-use crate::state::*;
 use crate::errors::*;
+use crate::state::*;
 
 /// Request randomness from VRF to shuffle tiles
 #[vrf]
@@ -32,10 +32,10 @@ pub struct CallbackShuffle<'info> {
 
 pub fn request_shuffle(ctx: Context<RequestShuffle>, client_seed: u8) -> Result<()> {
     msg!("Requesting VRF randomness for tile shuffle...");
-    
+
     let game_id = ctx.accounts.game.game_id;
     let program_id = crate::ID;
-    
+
     let ix = create_request_randomness_ix(RequestRandomnessParams {
         payer: ctx.accounts.payer.key(),
         oracle_queue: ctx.accounts.oracle_queue.key(),
@@ -50,30 +50,31 @@ pub fn request_shuffle(ctx: Context<RequestShuffle>, client_seed: u8) -> Result<
         }]),
         ..Default::default()
     });
-    
+
     ctx.accounts
         .invoke_signed_vrf(&ctx.accounts.payer.to_account_info(), &ix)?;
-    
+
     msg!("VRF randomness requested for game_id: {}", game_id);
     Ok(())
 }
 
-pub fn callback_shuffle(
-    ctx: Context<CallbackShuffle>,
-    randomness: [u8; 32],
-) -> Result<()> {
+pub fn callback_shuffle(ctx: Context<CallbackShuffle>, randomness: [u8; 32]) -> Result<()> {
     msg!("Consuming VRF randomness for tile shuffle...");
-    
+
     let game = &mut ctx.accounts.game;
-    
+
     require!(
-        game.game_status == GameStatus::WaitingForPlayers || game.game_status == GameStatus::InProgress,
+        game.game_status == GameStatus::WaitingForPlayers
+            || game.game_status == GameStatus::InProgress,
         RummikubError::InvalidGameState
     );
-    
+
     // Use the VRF randomness to shuffle the tile pool
     game.shuffle_tiles_with_randomness(randomness)?;
-    
-    msg!("Tiles shuffled with VRF randomness for game_id: {}", game.game_id);
+
+    msg!(
+        "Tiles shuffled with VRF randomness for game_id: {}",
+        game.game_id
+    );
     Ok(())
 }

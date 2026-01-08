@@ -18,11 +18,11 @@ pub struct DelegateGame<'info> {
 pub fn delegate(ctx: Context<DelegateGame>) -> Result<()> {
     // Load game state to get game_id for seeds
     let game_data = ctx.accounts.game.try_borrow_data()?;
-    
+
     // Read game_id from account data (after 8-byte discriminator)
     let game_id = u64::from_le_bytes(game_data[8..16].try_into().unwrap());
     drop(game_data);
-    
+
     ctx.accounts.delegate_game(
         &ctx.accounts.payer,
         &[GAME_SEED, &game_id.to_le_bytes()],

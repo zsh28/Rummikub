@@ -42,4 +42,34 @@ pub enum RummikubError {
     PrizeAlreadyClaimed,
     #[msg("Invalid game state")]
     InvalidGameState,
+    #[msg("Run must have at least one real tile to establish color")]
+    RunMustHaveRealTile,
+    #[msg("Duplicate number in run")]
+    DuplicateNumberInRun,
+    #[msg("Invalid joker placement - jokers must fill gaps in sequence")]
+    InvalidJokerPlacement,
+    #[msg("Run cannot wrap around (1 is always low, cannot follow 13)")]
+    RunCannotWrap,
+    #[msg("Set must have at least one real tile to establish number")]
+    SetMustHaveRealTile,
+    #[msg("Too many jokers in set")]
+    TooManyJokersInSet,
+    #[msg("Must use tiles from table after rearrangement")]
+    MustPreserveTableTiles,
+    #[msg("Initial meld cannot use or rearrange table tiles - must use only hand tiles")]
+    InitialMeldCannotUseTable,
+    #[msg("Cannot retrieve joker before completing initial meld")]
+    CannotRetrieveJokerBeforeOpening,
+    #[msg("Invalid meld index")]
+    InvalidMeldIndex,
+    #[msg("Invalid tile position in meld")]
+    InvalidTilePosition,
+    #[msg("Tile at this position is not a joker")]
+    NotAJoker,
+    #[msg("Invalid joker replacement - tile doesn't match required value")]
+    InvalidJokerReplacement,
+    #[msg("Must play at least one tile from hand when retrieving joker")]
+    MustPlayTileWithJoker,
+    #[msg("Retrieved joker must be played in the same turn")]
+    MustPlayRetrievedJoker,
 }

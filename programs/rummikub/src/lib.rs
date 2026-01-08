@@ -5,8 +5,11 @@ declare_id!("7YZdshKC7LL8briudnA7qcUT5PXuXRoU1CCnePABjuzs");
 
 pub mod constants;
 pub mod errors;
-pub mod state;
 pub mod instructions;
+pub mod state;
+
+#[cfg(test)]
+mod state_tests;
 
 use instructions::*;
 
@@ -16,7 +19,11 @@ pub mod rummikub {
     use super::*;
 
     /// Initialize a new game
-    pub fn initialize_game(ctx: Context<InitializeGame>, game_id: u64, max_players: u8) -> Result<()> {
+    pub fn initialize_game(
+        ctx: Context<InitializeGame>,
+        game_id: u64,
+        max_players: u8,
+    ) -> Result<()> {
         instructions::initialize::initialize_game(ctx, game_id, max_players)
     }
 
@@ -37,6 +44,21 @@ pub mod rummikub {
         new_table_melds: Vec<state::Meld>,
     ) -> Result<()> {
         instructions::play::play_tiles(ctx, played_tiles, new_table_melds)
+    }
+
+    /// Play tiles with joker retrieval (retrieve joker from table, replace it, and play tiles including the joker)
+    pub fn play_with_joker_retrieval(
+        ctx: Context<PlayTurn>,
+        joker_retrievals: Vec<state::JokerRetrieval>,
+        played_tiles: Vec<state::TilePlay>,
+        new_table_melds: Vec<state::Meld>,
+    ) -> Result<()> {
+        instructions::play::play_with_joker_retrieval(
+            ctx,
+            joker_retrievals,
+            played_tiles,
+            new_table_melds,
+        )
     }
 
     /// Claim prize after winning (95% to winner, 5% house fee)
