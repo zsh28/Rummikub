@@ -6,7 +6,14 @@
     "test:localnet": "EPHEMERAL_PROVIDER_ENDPOINT=http://localhost:7799 EPHEMERAL_WS_ENDPOINT=ws://localhost:7800 anchor test --provider.cluster localnet --skip-local-validator --skip-build --skip-deploy",
     "test:devnet": "anchor test --skip-local-validator",
     "build:deploy:localnet": "anchor build && anchor deploy --provider.cluster localnet",
-    "build:deploy:devnet": "anchor build && anchor deploy --provider.cluster devnet"
+    "build:deploy:devnet": "anchor build && anchor deploy --provider.cluster devnet",
+    "build": "cd app-rummikub && yarn run build",
+    "ci": "cd app-rummikub && yarn run ci",
+    "dev": "cd app-rummikub && yarn run dev",
+    "format": "cd app-rummikub && yarn run format",
+    "format:check": "cd app-rummikub && yarn run format:check",
+    "lint-web": "cd app-rummikub && yarn run lint",
+    "start": "cd app-rummikub && yarn run start"
   },
   "dependencies": {
     "@coral-xyz/anchor": "^0.32.1",
