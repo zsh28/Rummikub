@@ -1,0 +1,1172 @@
+{
+  "address": "8ygsQKbh1oBBhmm3Fva7oC8B4xxjw22R8UVUcoUoM6hi",
+  "metadata": {
+    "name": "rummikub",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Created with Anchor"
+  },
+  "instructions": [
+    {
+      "name": "callback_shuffle",
+      "docs": [
+        "Callback to consume VRF randomness and shuffle tiles"
+      ],
+      "discriminator": [
+        61,
+        96,
+        191,
+        76,
+        226,
+        182,
+        70,
+        95
+      ],
+      "accounts": [
+        {
+          "name": "vrf_program_identity",
+          "docs": [
+            "This check ensures that the vrf_program_identity (which is a PDA) is a signer",
+            "enforcing the callback is executed by the VRF program through CPI"
+          ],
+          "signer": true,
+          "address": "9irBy75QS2BN81FUgXuHcjqceJJRuc9oDkAe8TKVvvAw"
+        },
+        {
+          "name": "game",
+          "writable": true
+        }
+      ],
+      "args": [
+        {
+          "name": "randomness",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "claim_prize",
+      "docs": [
+        "Claim prize after winning (95% to winner, 5% house fee)"
+      ],
+      "discriminator": [
+        157,
+        233,
+        139,
+        121,
+        246,
+        62,
+        234,
+        235
+      ],
+      "accounts": [
+        {
+          "name": "game",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  97,
+                  109,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "game.game_id",
+                "account": "GameState"
+              }
+            ]
+          }
+        },
+        {
+          "name": "winner",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "treasury",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  114,
+                  101,
+                  97,
+                  115,
+                  117,
+                  114,
+                  121
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "commit",
+      "docs": [
+        "Commit game state back to base layer"
+      ],
+      "discriminator": [
+        223,
+        140,
+        142,
+        165,
+        229,
+        208,
+        156,
+        74
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "game",
+          "writable": true
+        },
+        {
+          "name": "magic_program",
+          "address": "Magic11111111111111111111111111111111111111"
+        },
+        {
+          "name": "magic_context",
+          "writable": true,
+          "address": "MagicContext1111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "delegate",
+      "docs": [
+        "Delegate game state to Ephemeral Rollup for fast, free gameplay"
+      ],
+      "discriminator": [
+        90,
+        147,
+        75,
+        178,
+        85,
+        88,
+        4,
+        137
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "signer": true
+        },
+        {
+          "name": "buffer_game",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  98,
+                  117,
+                  102,
+                  102,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "game"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                118,
+                135,
+                105,
+                239,
+                220,
+                163,
+                118,
+                245,
+                116,
+                94,
+                178,
+                59,
+                136,
+                10,
+                254,
+                29,
+                85,
+                110,
+                141,
+                146,
+                118,
+                111,
+                8,
+                7,
+                195,
+                119,
+                154,
+                129,
+                159,
+                32,
+                220,
+                205
+              ]
+            }
+          }
+        },
+        {
+          "name": "delegation_record_game",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  100,
+                  101,
+                  108,
+                  101,
+                  103,
+                  97,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "game"
+              }
+            ],
+            "program": {
+              "kind": "account",
+              "path": "delegation_program"
+            }
+          }
+        },
+        {
+          "name": "delegation_metadata_game",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  100,
+                  101,
+                  108,
+                  101,
+                  103,
+                  97,
+                  116,
+                  105,
+                  111,
+                  110,
+                  45,
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "game"
+              }
+            ],
+            "program": {
+              "kind": "account",
+              "path": "delegation_program"
+            }
+          }
+        },
+        {
+          "name": "game",
+          "writable": true
+        },
+        {
+          "name": "owner_program",
+          "address": "8ygsQKbh1oBBhmm3Fva7oC8B4xxjw22R8UVUcoUoM6hi"
+        },
+        {
+          "name": "delegation_program",
+          "address": "DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "draw_tile",
+      "docs": [
+        "Draw a tile from the pool"
+      ],
+      "discriminator": [
+        4,
+        249,
+        6,
+        108,
+        50,
+        208,
+        210,
+        105
+      ],
+      "accounts": [
+        {
+          "name": "game",
+          "writable": true
+        },
+        {
+          "name": "player",
+          "signer": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "initialize_game",
+      "docs": [
+        "Initialize a new game"
+      ],
+      "discriminator": [
+        44,
+        62,
+        102,
+        247,
+        126,
+        208,
+        130,
+        215
+      ],
+      "accounts": [
+        {
+          "name": "game",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  97,
+                  109,
+                  101
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "game_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "game_id",
+          "type": "u64"
+        },
+        {
+          "name": "max_players",
+          "type": "u8"
+        }
+      ]
+    },
+    {
+      "name": "join_game",
+      "docs": [
+        "Join an existing game with 0.1 SOL entry fee"
+      ],
+      "discriminator": [
+        107,
+        112,
+        18,
+        38,
+        56,
+        173,
+        60,
+        128
+      ],
+      "accounts": [
+        {
+          "name": "game",
+          "writable": true
+        },
+        {
+          "name": "player",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "play_tiles",
+      "docs": [
+        "Play tiles (lay down melds and/or rearrange table)"
+      ],
+      "discriminator": [
+        47,
+        81,
+        209,
+        201,
+        190,
+        30,
+        178,
+        131
+      ],
+      "accounts": [
+        {
+          "name": "game",
+          "writable": true
+        },
+        {
+          "name": "player",
+          "signer": true
+        }
+      ],
+      "args": [
+        {
+          "name": "played_tiles",
+          "type": {
+            "vec": {
+              "defined": {
+                "name": "TilePlay"
+              }
+            }
+          }
+        },
+        {
+          "name": "new_table_melds",
+          "type": {
+            "vec": {
+              "defined": {
+                "name": "Meld"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "play_with_joker_retrieval",
+      "docs": [
+        "Play tiles with joker retrieval (retrieve joker from table, replace it, and play tiles including the joker)"
+      ],
+      "discriminator": [
+        158,
+        206,
+        80,
+        26,
+        253,
+        205,
+        148,
+        37
+      ],
+      "accounts": [
+        {
+          "name": "game",
+          "writable": true
+        },
+        {
+          "name": "player",
+          "signer": true
+        }
+      ],
+      "args": [
+        {
+          "name": "joker_retrievals",
+          "type": {
+            "vec": {
+              "defined": {
+                "name": "JokerRetrieval"
+              }
+            }
+          }
+        },
+        {
+          "name": "played_tiles",
+          "type": {
+            "vec": {
+              "defined": {
+                "name": "TilePlay"
+              }
+            }
+          }
+        },
+        {
+          "name": "new_table_melds",
+          "type": {
+            "vec": {
+              "defined": {
+                "name": "Meld"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "process_undelegation",
+      "discriminator": [
+        196,
+        28,
+        41,
+        206,
+        48,
+        37,
+        51,
+        167
+      ],
+      "accounts": [
+        {
+          "name": "base_account",
+          "writable": true
+        },
+        {
+          "name": "buffer"
+        },
+        {
+          "name": "payer",
+          "writable": true
+        },
+        {
+          "name": "system_program"
+        }
+      ],
+      "args": [
+        {
+          "name": "account_seeds",
+          "type": {
+            "vec": "bytes"
+          }
+        }
+      ]
+    },
+    {
+      "name": "request_shuffle",
+      "docs": [
+        "Request VRF randomness to shuffle tiles"
+      ],
+      "discriminator": [
+        130,
+        20,
+        53,
+        22,
+        23,
+        102,
+        225,
+        135
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "game",
+          "writable": true
+        },
+        {
+          "name": "oracle_queue",
+          "writable": true,
+          "address": "Cuj97ggrhhidhbu39TijNVqE74xvKJ69gDervRUXAxGh"
+        },
+        {
+          "name": "program_identity",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  105,
+                  100,
+                  101,
+                  110,
+                  116,
+                  105,
+                  116,
+                  121
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "vrf_program",
+          "address": "Vrf1RNUjXmQGjmQrQLvJHs9SNkvDJEsRVFPkfSQUwGz"
+        },
+        {
+          "name": "slot_hashes",
+          "address": "SysvarS1otHashes111111111111111111111111111"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "client_seed",
+          "type": "u8"
+        }
+      ]
+    },
+    {
+      "name": "undelegate",
+      "docs": [
+        "Commit and undelegate game state"
+      ],
+      "discriminator": [
+        131,
+        148,
+        180,
+        198,
+        91,
+        104,
+        42,
+        238
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "game",
+          "writable": true
+        },
+        {
+          "name": "magic_program",
+          "address": "Magic11111111111111111111111111111111111111"
+        },
+        {
+          "name": "magic_context",
+          "writable": true,
+          "address": "MagicContext1111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    }
+  ],
+  "accounts": [
+    {
+      "name": "GameState",
+      "discriminator": [
+        144,
+        94,
+        208,
+        172,
+        248,
+        99,
+        134,
+        120
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "InvalidPlayerCount",
+      "msg": "Invalid player count. Must be between 2-4 players"
+    },
+    {
+      "code": 6001,
+      "name": "GameAlreadyStarted",
+      "msg": "Game has already started"
+    },
+    {
+      "code": 6002,
+      "name": "GameFull",
+      "msg": "Game is full"
+    },
+    {
+      "code": 6003,
+      "name": "GameNotInProgress",
+      "msg": "Game is not in progress"
+    },
+    {
+      "code": 6004,
+      "name": "NotEnoughTiles",
+      "msg": "Not enough tiles remaining"
+    },
+    {
+      "code": 6005,
+      "name": "TooManyTiles",
+      "msg": "Player has too many tiles"
+    },
+    {
+      "code": 6006,
+      "name": "NotPlayerTurn",
+      "msg": "Not your turn"
+    },
+    {
+      "code": 6007,
+      "name": "PlayerNotInGame",
+      "msg": "Player not in game"
+    },
+    {
+      "code": 6008,
+      "name": "InvalidTileIndex",
+      "msg": "Invalid tile index"
+    },
+    {
+      "code": 6009,
+      "name": "InitialMeldTooLow",
+      "msg": "Initial meld must be at least 30 points"
+    },
+    {
+      "code": 6010,
+      "name": "MeldTooSmall",
+      "msg": "Meld must have at least 3 tiles"
+    },
+    {
+      "code": 6011,
+      "name": "InvalidSet",
+      "msg": "Invalid set"
+    },
+    {
+      "code": 6012,
+      "name": "InvalidRun",
+      "msg": "Invalid run"
+    },
+    {
+      "code": 6013,
+      "name": "DuplicateColorInSet",
+      "msg": "Duplicate color in set"
+    },
+    {
+      "code": 6014,
+      "name": "NonConsecutiveRun",
+      "msg": "Non-consecutive numbers in run"
+    },
+    {
+      "code": 6015,
+      "name": "EmptyTileInMeld",
+      "msg": "Empty tile in meld"
+    },
+    {
+      "code": 6016,
+      "name": "GameNotFinished",
+      "msg": "Game not finished yet"
+    },
+    {
+      "code": 6017,
+      "name": "NotTheWinner",
+      "msg": "Not the winner"
+    },
+    {
+      "code": 6018,
+      "name": "PrizeAlreadyClaimed",
+      "msg": "Prize already claimed"
+    },
+    {
+      "code": 6019,
+      "name": "InvalidGameState",
+      "msg": "Invalid game state"
+    },
+    {
+      "code": 6020,
+      "name": "RunMustHaveRealTile",
+      "msg": "Run must have at least one real tile to establish color"
+    },
+    {
+      "code": 6021,
+      "name": "DuplicateNumberInRun",
+      "msg": "Duplicate number in run"
+    },
+    {
+      "code": 6022,
+      "name": "InvalidJokerPlacement",
+      "msg": "Invalid joker placement - jokers must fill gaps in sequence"
+    },
+    {
+      "code": 6023,
+      "name": "RunCannotWrap",
+      "msg": "Run cannot wrap around (1 is always low, cannot follow 13)"
+    },
+    {
+      "code": 6024,
+      "name": "SetMustHaveRealTile",
+      "msg": "Set must have at least one real tile to establish number"
+    },
+    {
+      "code": 6025,
+      "name": "TooManyJokersInSet",
+      "msg": "Too many jokers in set"
+    },
+    {
+      "code": 6026,
+      "name": "MustPreserveTableTiles",
+      "msg": "Must use tiles from table after rearrangement"
+    },
+    {
+      "code": 6027,
+      "name": "InitialMeldCannotUseTable",
+      "msg": "Initial meld cannot use or rearrange table tiles - must use only hand tiles"
+    },
+    {
+      "code": 6028,
+      "name": "CannotRetrieveJokerBeforeOpening",
+      "msg": "Cannot retrieve joker before completing initial meld"
+    },
+    {
+      "code": 6029,
+      "name": "InvalidMeldIndex",
+      "msg": "Invalid meld index"
+    },
+    {
+      "code": 6030,
+      "name": "InvalidTilePosition",
+      "msg": "Invalid tile position in meld"
+    },
+    {
+      "code": 6031,
+      "name": "NotAJoker",
+      "msg": "Tile at this position is not a joker"
+    },
+    {
+      "code": 6032,
+      "name": "InvalidJokerReplacement",
+      "msg": "Invalid joker replacement - tile doesn't match required value"
+    },
+    {
+      "code": 6033,
+      "name": "MustPlayTileWithJoker",
+      "msg": "Must play at least one tile from hand when retrieving joker"
+    },
+    {
+      "code": 6034,
+      "name": "MustPlayRetrievedJoker",
+      "msg": "Retrieved joker must be played in the same turn"
+    }
+  ],
+  "types": [
+    {
+      "name": "GameState",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "game_id",
+            "type": "u64"
+          },
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "max_players",
+            "type": "u8"
+          },
+          {
+            "name": "current_players",
+            "type": "u8"
+          },
+          {
+            "name": "current_turn",
+            "type": "u8"
+          },
+          {
+            "name": "game_status",
+            "type": {
+              "defined": {
+                "name": "GameStatus"
+              }
+            }
+          },
+          {
+            "name": "winner",
+            "type": {
+              "option": "pubkey"
+            }
+          },
+          {
+            "name": "prize_pool",
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "players",
+            "type": {
+              "array": [
+                {
+                  "defined": {
+                    "name": "Player"
+                  }
+                },
+                4
+              ]
+            }
+          },
+          {
+            "name": "table_melds",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "Meld"
+                }
+              }
+            }
+          },
+          {
+            "name": "tile_pool",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "Tile"
+                }
+              }
+            }
+          },
+          {
+            "name": "tiles_remaining",
+            "type": "u16"
+          }
+        ]
+      }
+    },
+    {
+      "name": "GameStatus",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "WaitingForPlayers"
+          },
+          {
+            "name": "InProgress"
+          },
+          {
+            "name": "Finished"
+          }
+        ]
+      }
+    },
+    {
+      "name": "JokerRetrieval",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "meld_index",
+            "type": "u8"
+          },
+          {
+            "name": "joker_position",
+            "type": "u8"
+          },
+          {
+            "name": "replacement_tile",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Meld",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "meld_type",
+            "type": {
+              "defined": {
+                "name": "MeldType"
+              }
+            }
+          },
+          {
+            "name": "tiles",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "Tile"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "MeldType",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Set"
+          },
+          {
+            "name": "Run"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Player",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "pubkey",
+            "type": "pubkey"
+          },
+          {
+            "name": "tiles",
+            "type": {
+              "array": [
+                {
+                  "defined": {
+                    "name": "Tile"
+                  }
+                },
+                21
+              ]
+            }
+          },
+          {
+            "name": "tile_count",
+            "type": "u8"
+          },
+          {
+            "name": "has_opened",
+            "type": "bool"
+          },
+          {
+            "name": "score",
+            "type": "i16"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Tile",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "tile_type",
+            "type": {
+              "defined": {
+                "name": "TileType"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "TileColor",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Red"
+          },
+          {
+            "name": "Blue"
+          },
+          {
+            "name": "Black"
+          },
+          {
+            "name": "Orange"
+          }
+        ]
+      }
+    },
+    {
+      "name": "TilePlay",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "tile_index",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "TileType",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Number",
+            "fields": [
+              {
+                "name": "color",
+                "type": {
+                  "defined": {
+                    "name": "TileColor"
+                  }
+                }
+              },
+              {
+                "name": "number",
+                "type": "u8"
+              }
+            ]
+          },
+          {
+            "name": "Joker"
+          },
+          {
+            "name": "Empty"
+          }
+        ]
+      }
+    }
+  ]
+}
