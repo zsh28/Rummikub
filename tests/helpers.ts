@@ -132,15 +132,25 @@ export async function airdropToPlayers(
   isLocalnet: boolean,
   players: web3.Keypair[]
 ): Promise<void> {
-  const airdropConnection = isLocalnet ? connection : connection;
+  // For devnet, use a direct connection for airdrops since Magic Router doesn't support requestAirdrop
+  const airdropConnection = isLocalnet
+    ? connection
+    : new anchor.web3.Connection("https://api.devnet.solana.com", "confirmed");
 
   console.log("Airdropping SOL to test players...");
   for (const player of players) {
-    const airdropSig = await airdropConnection.requestAirdrop(
-      player.publicKey,
-      3 * LAMPORTS_PER_SOL
-    );
-    await airdropConnection.confirmTransaction(airdropSig, "confirmed");
+    try {
+      const airdropSig = await airdropConnection.requestAirdrop(
+        player.publicKey,
+        3 * LAMPORTS_PER_SOL
+      );
+      await airdropConnection.confirmTransaction(airdropSig, "confirmed");
+    } catch (error) {
+      console.log(
+        `Warning: Airdrop failed for ${player.publicKey.toString()}: ${error}`
+      );
+      // Continue anyway - player might already have funds
+    }
   }
   console.log("Airdrops complete\n");
 }
