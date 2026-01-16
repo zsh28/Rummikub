@@ -8,6 +8,9 @@ skip-lint = false
 [programs.localnet]
 rummikub = "8ygsQKbh1oBBhmm3Fva7oC8B4xxjw22R8UVUcoUoM6hi"
 
+[programs.devnet]
+rummikub = "8ygsQKbh1oBBhmm3Fva7oC8B4xxjw22R8UVUcoUoM6hi"
+
 [registry]
 url = "https://api.apr.dev"
 
